@@ -24,15 +24,23 @@ const WeightBar: React.FC<{ percent: number; durability?: boolean }> = ({
   percent,
   durability,
 }) => {
+  // const color = React.useMemo(
+  //   () =>
+  //     durability
+  //       ? percent < 50
+  //         ? colorMixer(COLORS.accentColor, COLORS.primaryColor, percent / 100)
+  //         : colorMixer(COLORS.secondColor, COLORS.accentColor, percent / 100)
+  //       : percent > 50
+  //       ? colorMixer(COLORS.primaryColor, COLORS.accentColor, percent / 100)
+  //       : colorMixer(COLORS.accentColor, COLORS.secondColor, percent / 50),
+  //   [durability, percent]
+  // );
+
   const color = React.useMemo(
     () =>
       durability
-        ? percent < 50
-          ? colorMixer(COLORS.accentColor, COLORS.primaryColor, percent / 100)
-          : colorMixer(COLORS.secondColor, COLORS.accentColor, percent / 100)
-        : percent > 50
-        ? colorMixer(COLORS.primaryColor, COLORS.accentColor, percent / 100)
-        : colorMixer(COLORS.accentColor, COLORS.secondColor, percent / 50),
+        ? colorMixer([0, 248, 185], [27, 24, 68], percent / 100)
+        : '#00f8b9',
     [durability, percent]
   );
 

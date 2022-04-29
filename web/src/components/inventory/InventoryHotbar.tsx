@@ -5,6 +5,7 @@ import { Items } from '../../store/items';
 import { Slot } from '../../typings';
 import Fade from '../utils/Fade';
 import WeightBar from '../utils/WeightBar';
+import { Locale } from '../../store/locale';
 
 const InventoryHotbar: React.FC<{ items: Slot[] }> = ({ items }) => {
   const [hotbarVisible, setHotbarVisible] = useState(false);
@@ -23,7 +24,7 @@ const InventoryHotbar: React.FC<{ items: Slot[] }> = ({ items }) => {
 
   return (
     <div className="center-wrapper">
-      <Fade visible={hotbarVisible} className="hotbar-grid">
+      <Fade visible={hotbarVisible} className="hotbar-grid background-hotbar">
         {items.map((item) => (
           <div
             className="item-container"
@@ -38,7 +39,15 @@ const InventoryHotbar: React.FC<{ items: Slot[] }> = ({ items }) => {
           >
             {isSlotWithItem(item) && (
               <>
+                <div className="item-label">
+                  {item.metadata?.label
+                    ? item.metadata.label
+                    : Items[item.name]?.label || item.name}
+                </div>
                 <div className="item-count">
+                <span>
+                  {item.count ? item.name === 'money' || item.name ==='black_money' ? Locale.$ || '' + item.count.toLocaleString('en-us') : item.count.toLocaleString('en-us') + `x` : ''}
+                </span>
                   <span>
                     {item.weight > 0
                       ? item.weight >= 1000
@@ -49,17 +58,12 @@ const InventoryHotbar: React.FC<{ items: Slot[] }> = ({ items }) => {
                             minimumFractionDigits: 0,
                           })}g `
                       : ''}
-                    {item.count?.toLocaleString('en-us')}x
                   </span>
                 </div>
+                
                 {item?.durability !== undefined && (
                   <WeightBar percent={item.durability} durability />
                 )}
-                <div className="item-label">
-                  {item.metadata?.label
-                    ? item.metadata.label
-                    : Items[item.name]?.label || item.name}
-                </div>
               </>
             )}
           </div>

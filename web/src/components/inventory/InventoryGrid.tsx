@@ -61,7 +61,7 @@ const InventoryGrid: React.FC<{ inventory: Inventory }> = ({ inventory }) => {
 
   return (
     <>
-      <div className="column-wrapper">
+      <div className="column-wrapper background-inventory">
         <div className="inventory-label">
           <p>{inventory.label && `${inventory.label}`}</p>
           {inventory.maxWeight && (
@@ -101,7 +101,7 @@ const InventoryGrid: React.FC<{ inventory: Inventory }> = ({ inventory }) => {
             delayShow={300}
           >
             <>
-              <span style={{ fontSize: '1em' }}>
+              <span style={{ fontSize: '1em', lineHeight: '1em', fontWeight: '700', textTransform: 'capitalize' }}>
                 {currentItem.metadata?.label
                   ? currentItem.metadata.label
                   : Items[currentItem.name]?.label || currentItem.name}

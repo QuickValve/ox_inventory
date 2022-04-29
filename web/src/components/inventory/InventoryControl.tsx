@@ -32,7 +32,7 @@ const InfoScreen: React.FC<{
       <p>[CTRL + C] - {Locale.ui_ctrl_c}</p>
       <span
         className="info-ox"
-        onClick={() => Notify({ text: 'Made with 🐂 by the Overextended team' })}
+        onClick={() => Notify({ text: 'Made with 🐂 by the Overextended team \n NP 3.5 CSS by QuickValve' })}
       >
         🐂
       </span>
@@ -75,7 +75,7 @@ const InventoryControl: React.FC = () => {
       <Fade visible={infoVisible} duration={0.25} className="info-fade">
         <InfoScreen infoVisible={infoVisible} setInfoVisible={setInfoVisible} />
       </Fade>
-      <div className="column-wrapper" style={{ margin: '1vh' }}>
+      <div className="column-wrapper background-control" style={{ margin: '4vh' }}>
         <input
           type="number"
           className="button input"
@@ -92,11 +92,13 @@ const InventoryControl: React.FC = () => {
         <button className="button" onClick={() => fetchNui('exit')}>
           {Locale.ui_close}
         </button>
-        <div className="misc-btns">
-          <button onClick={() => setInfoVisible(true)}>
-            <FontAwesomeIcon icon={faInfoCircle} />
-          </button>
-        </div>
+      </div>
+
+      <div className="misc-btns">
+        <button onClick={() => setInfoVisible(true)}>
+          ?
+          {/* <FontAwesomeIcon icon={faInfoCircle} /> */}
+        </button>
       </div>
     </>
   );

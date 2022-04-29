@@ -132,7 +132,13 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item, setCurrentItem })
       >
         {isSlotWithItem(item) && (
           <>
+            <div className="item-label">
+              {item.metadata?.label ? item.metadata.label : Items[item.name]?.label || item.name}
+            </div>
             <div className="item-count">
+              <span>
+                {item.count ? item.name === 'money' || item.name ==='black_money' ? Locale.$ || '' + item.count.toLocaleString('en-us') : item.count.toLocaleString('en-us') + `x` : ''}
+              </span>
               <span>
                 {item.weight > 0
                   ? item.weight >= 1000
@@ -143,13 +149,9 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item, setCurrentItem })
                         minimumFractionDigits: 0,
                       })}g `
                   : ''}
-                {/* {item.count?.toLocaleString('en-us')}x */}
-                {item.count ? item.count.toLocaleString('en-us') + `x` : ''}
               </span>
             </div>
-            {inventory.type !== 'shop' && item?.durability !== undefined && (
-              <WeightBar percent={item.durability} durability />
-            )}
+            
             {inventory.type === 'shop' && item?.price !== undefined && (
               <>
                 {item?.currency !== 'money' &&
@@ -185,9 +187,9 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item, setCurrentItem })
                 )}
               </>
             )}
-            <div className="item-label">
-              {item.metadata?.label ? item.metadata.label : Items[item.name]?.label || item.name}
-            </div>
+            {inventory.type !== 'shop' && item?.durability !== undefined && (
+              <WeightBar percent={item.durability} durability />
+            )}
           </>
         )}
       </div>
