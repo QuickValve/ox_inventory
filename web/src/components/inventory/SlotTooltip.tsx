@@ -23,14 +23,14 @@ const SlotTooltip: React.FC<{ item: SlotWithItem; inventory: Inventory }> = ({ i
       {!itemData ? (
         <div className="tooltip-wrapper">
           <div className="tooltip-header-wrapper">
-            <p>{item.name}</p>
+            <span>{item.name}</span>
           </div>
           <Divider />
         </div>
       ) : (
         <div className="tooltip-wrapper">
           <div className="tooltip-header-wrapper">
-            <p>{item.metadata?.label || itemData.label || item.name}</p>
+            <span>{item.metadata?.label || itemData.label || item.name}</span>
             {inventory.type === 'crafting' ? (
               <div className="tooltip-crafting-duration">
                 <ClockIcon />

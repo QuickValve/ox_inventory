@@ -6,7 +6,7 @@ import { DragSource } from '../../typings';
 import { onUse } from '../../dnd/onUse';
 import { onGive } from '../../dnd/onGive';
 import { fetchNui } from '../../utils/fetchNui';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Locale } from '../../store/locale';
 import { IconButton } from '@mui/material';
@@ -56,9 +56,13 @@ const InventoryControl: React.FC = () => {
         </div>
       </div>
 
-      <IconButton className="useful-controls-button" size="large" onClick={() => setInfoVisible(true)}>
-        <FontAwesomeIcon icon={faInfoCircle} />
-      </IconButton>
+      <div className="buttons-wrapper">
+        <div className="buttons-container">
+          <IconButton className="useful-controls-button" size="medium" disableRipple={true} onClick={() => setInfoVisible(true)}>
+            <FontAwesomeIcon icon={faQuestion} />
+          </IconButton>
+        </div>
+      </div>
     </>
   );
 };

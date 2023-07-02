@@ -11,6 +11,7 @@ import { canCraftItem, getItemUrl, canPurchaseItem, isSlotWithItem } from '../..
 import { onUse } from '../../dnd/onUse';
 import { Locale } from '../../store/locale';
 import { Tooltip } from '@mui/material';
+import Fade from '@mui/material/Fade';
 import SlotTooltip from './SlotTooltip';
 import { setContextMenu } from '../../store/inventory';
 import { onCraft } from '../../dnd/onCraft';
@@ -133,6 +134,7 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
       placement="right-start"
       enterDelay={500}
       enterNextDelay={500}
+      TransitionComponent={Fade}
       PopperProps={{ disablePortal: true }}
     >
       <div
@@ -150,9 +152,14 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
           border: isOver ? '1px dashed rgba(255,255,255,0.4)' : '',
         }}
       >
+        {inventory.type === 'player' && item.slot <= 5 && (
+          <div className='item-hotslot-header-wrapper'>
+            <div className="inventory-slot-number">{item.slot}</div>
+          </div>
+        )}
         {isSlotWithItem(item) && (
           <div className="item-slot-wrapper">
-            <div
+            {/* <div
               className={
                 inventory.type === 'player' && item.slot <= 5
                   ? 'item-hotslot-header-wrapper'
@@ -162,7 +169,15 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
               {inventory.type === 'player' && item.slot <= 5 && (
                 <div className="inventory-slot-number">{item.slot}</div>
               )}
+            </div> */}
+            <div className="inventory-slot-label-box">
+                <div className="inventory-slot-label-text">
+                  {item.metadata?.label ? item.metadata.label : Items[item.name]?.label || item.name}
+                </div>
+            </div>
+            <div>
               <div className="item-slot-info-wrapper">
+                <p>{item.count ? item.count.toLocaleString('en-us') + `x` : ''}</p>
                 <p>
                   {item.weight > 0
                     ? item.weight >= 1000
@@ -174,10 +189,7 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
                         })}g `
                     : ''}
                 </p>
-                <p>{item.count ? item.count.toLocaleString('en-us') + `x` : ''}</p>
               </div>
-            </div>
-            <div>
               {inventory.type !== 'shop' && item?.durability !== undefined && (
                 <WeightBar percent={item.durability} durability />
               )}
@@ -215,11 +227,6 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
                   )}
                 </>
               )}
-              <div className="inventory-slot-label-box">
-                <div className="inventory-slot-label-text">
-                  {item.metadata?.label ? item.metadata.label : Items[item.name]?.label || item.name}
-                </div>
-              </div>
             </div>
           </div>
         )}

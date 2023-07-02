@@ -1,14 +1,14 @@
 $mainColor: #22232c;
-$textColor: #c1c2c5;
+$textColor: #ffffff;
 $mainFont: Roboto;
 
-$seconaryColor: rgba(12, 12, 12, 0.4);
+$seconaryColor: rgba(255, 255, 255, 0.05);
 $secondaryColorLight: rgba(0, 0, 0, 0.5);
 $secondaryColorDark: rgba(12, 12, 12, 0.8);
 
 $gridCols: 5;
 $gridRows: 5;
-$gridSize: 10.2vh;
+$gridSize: 12.5vh;
 $gridGap: 2px;
 $containerSize: calc(#{$gridRows} * #{$gridSize + 0.22vh} + #{$gridRows} * #{$gridGap});
 
@@ -53,14 +53,18 @@ input[type='number']::-webkit-outer-spin-button {
   padding: 0 !important;
 }
 
+.MuiMenu-paper {
+  background-color: transparent !important;
+}
+
 .MuiMenu-list {
   min-width: 200px;
-  background-color: $mainColor;
+  background-color: rgba(34, 35, 51, 0.90) !important;
   color: $textColor;
   padding: 4px;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: inset;
-  border-width: 1px;
+  // border-color: rgba(255, 255, 255, 0.2);
+  // border-style: inset;
+  // border-width: 1px;
   font-size: 16px !important;
 }
 
@@ -78,13 +82,14 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 button:active {
-  transform: translateY(3px);
+  // transform: translateY(3px);
+  // filter: brightness(0.5);
 }
 
 .item-drag-preview {
   width: 7.7vh;
   height: 7.7vh;
-  z-index: 1;
+  z-index: 999;
   position: fixed;
   pointer-events: none;
   top: 0;
@@ -101,51 +106,69 @@ button:active {
   justify-content: center;
   align-items: center;
   height: 100%;
-
-  gap: 20px;
+  gap: 4.5vh;
+  
+  background: rgba(1, 1, 1, 0.5);
 }
 
 .inventory-control {
   display: flex;
+  background: rgba(34, 35, 51, 0.80);
+  padding: 1rem;
+  z-index: 1;
 
   .inventory-control-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 0.4rem;
     justify-content: center;
     align-items: center;
   }
 
   .inventory-control-input {
     transition: 200ms;
-    padding: 16px 8px;
-    border-radius: 2.5%;
+    width: 14vh;
+
+    padding: 15px 0px;
+    margin: 0;
+
+    // border-radius: 2.5%;
     font-family: $mainFont;
-    font-size: 16px;
+    font-size: 1.6vh;
     text-align: center;
     outline: none;
     border: none;
-    color: #fff;
-    background-color: $seconaryColor;
+    color: rgba(220, 220, 220, 1);
+    background-color: #444555;
+    &:hover {
+      filter: brightness(0.85);
+    }
     &:focus-within {
-      background-color: $secondaryColorDark;
+      // background-color: $secondaryColorDark;
+      filter: brightness(0.85);
     }
   }
 
   .inventory-control-button {
-    font-size: 14px;
-    color: #fff;
-    background-color: $seconaryColor;
+    color: rgba(220, 220, 220, 1);
+    background-color: #444555;
     transition: 200ms;
-    padding: 12px 8px;
-    border-radius: 2.5%;
+    padding: 15px 0px;
+    // border-radius: 2.5%;
+
+    width: 100%;
     border: none;
+
+    font-size: 1.4vh;
     text-transform: uppercase;
     font-family: $mainFont;
-    width: 100%;
     font-weight: 500;
     &:hover {
-      background-color: $secondaryColorDark;
+      // background-color: $secondaryColorDark;
+      filter: brightness(0.85);
+    }
+    &:active {
+      filter: brightness(0.5);
     }
   }
 }
@@ -160,15 +183,33 @@ button:active {
   gap: 20px;
 }
 
-.useful-controls-button {
+.buttons-wrapper {
   position: absolute !important;
-  bottom: 25px;
-  right: 25px;
+  top: 25%;
+  height: 50%;
+  left: 41%;
+  width: 18%;
+}
+
+.buttons-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.useful-controls-button {
   transition: 200ms !important;
-  border-radius: 5% !important;
-  background-color: $seconaryColor !important;
+  border-radius: 10% !important;
+  width: 4vh;
+  aspect-ratio: 1/1;
+  background: rgba(34, 35, 51, 0.80) !important;
   &:hover {
-    background-color: $secondaryColorDark !important;
+    background-color: #444555 !important;
+  }
+  &:active {
+    filter: brightness(0.5);
   }
 }
 
@@ -181,19 +222,24 @@ button:active {
 }
 
 // Dialog is used fro useful controls window
+
+.MuiDialog-paper	 {
+  background-color: transparent !important;
+}
+
 .MuiDialogContent-root {
-  background-color: $mainColor;
-  color: $textColor;
+  background: rgba(34, 35, 51, 0.80);
+  color: rgba(220, 220, 220, 1);
 }
 
 .MuiDialogTitle-root {
-  background-color: $mainColor;
-  color: $textColor;
+  background: rgba(34, 35, 51, 0.80);
+  color: rgba(220, 220, 220, 1);
 }
 
 .MuiDialogActions-root {
-  background-color: $mainColor;
-  color: $textColor;
+  background: rgba(34, 35, 51, 0.80);
+  color: rgba(220, 220, 220, 1);
 }
 
 // inventory grids
@@ -201,13 +247,19 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: calc($gridGap * 2);
+
+  padding: 2.1vh;
+  background: rgba(34, 35, 51, 0.80);
+
 }
+
 .inventory-grid-header-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   p {
-    font-size: 16px;
+    font-size: 2vh;
+    font-weight: bold;
   }
 }
 
@@ -220,52 +272,54 @@ button:active {
   overflow-y: scroll;
 }
 
+.inventory-grid-container::-webkit-scrollbar {
+  display: block;
+  width: 0.5vh;
+}
+
+.inventory-grid-container::-webkit-scrollbar-track {
+  background: #1114199f;
+}
+
+.inventory-grid-container::-webkit-scrollbar-thumb {
+  background-color: #ffffff25;
+}
+
 // inventory slots
 .inventory-slot {
   background-color: $seconaryColor;
   background-repeat: no-repeat;
   background-position: center;
-  border-radius: 2.5%;
   image-rendering: -webkit-optimize-contrast;
   position: relative;
   background-size: 7vh;
   color: $textColor;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: inset;
-  border-width: 1px;
+
+  box-shadow: inset -1px 0px 1px rgba(255, 255, 255, 0.04), inset 0px 0px 6px rgba(255, 255, 255, 0.03);
 }
 
 .inventory-slot-label-box {
-  background-color: $mainColor;
   color: $textColor;
-  text-align: center;
-  border-bottom-left-radius: 0.25vh;
-  border-bottom-right-radius: 0.25vh;
-  border-top-color: rgba(0, 0, 0, 0.2);
-  border-top-style: inset;
-  border-top-width: 1px;
+  width: 80%;
+  margin: 3% 4%;
 }
 
 .inventory-slot-label-text {
-  text-transform: uppercase;
+  // text-transform: capitalize;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 2px 3px;
-  font-weight: 400;
+  font-weight: 300;
+  font-size: 1.25vh;
   font-family: $mainFont;
-  font-size: 12px;
 }
 
 .inventory-slot-number {
-  background-color: white;
   color: black;
-  height: 12px;
-  border-top-left-radius: 0.25vh;
-  border-bottom-right-radius: 0.25vh;
-  padding: 3px;
-  font-size: 12px;
+  font-weight: 300;
   font-family: $mainFont;
+	font-size: 7vh;
+  line-height: 7vh;
 }
 
 .item-slot-wrapper {
@@ -279,24 +333,35 @@ button:active {
 }
 
 .item-slot-header-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  height: 100%;
+
+	opacity: 0.15;
+
+  display:flex;
+  align-items: center;
+  justify-content: center;
+
+	pointer-events: none;
 }
 
 .item-hotslot-header-wrapper {
   @extend .item-slot-header-wrapper;
-  justify-content: space-between !important;
+  // justify-content: space-between !important;
 }
 
 .item-slot-info-wrapper {
   display: flex;
+  justify-content: space-between;
   flex-direction: row;
-  align-self: flex-end;
-  padding: 3px;
-  gap: 3px;
+  margin: 3% 4%;
+  color: rgba(222, 222, 222, 1);
   p {
-    font-size: 12px;
+    font-size: 1.12vh;
   }
 }
 
@@ -315,24 +380,34 @@ button:active {
 .item-slot-price-wrapper {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-  padding-right: 3px;
+  justify-content: center;
+  padding: 2% 1%; 
+  background-color: #1114199f;
   p {
-    font-size: 14px;
+    color: #95ef77;
+    font-size: 1.25vh;
     text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7);
   }
 }
 
 // slot tooltip
+.MuiDivider-root {
+  margin-top: 0.3vh !important;
+  margin-bottom: 0.5vh !important;
+}
+
 .MuiTooltip-tooltip {
-  background-color: $mainColor !important;
+  background-color: rgba(34, 35, 51, 0.95) !important;
+  padding: 1vh !important;
   min-width: 200px !important;
   color: $textColor !important;
   font-family: $mainFont !important;
-  border-radius: 4px !important;
-  border-color: rgba(0, 0, 0, 0.2) !important;
-  border-style: inset !important;
-  border-width: 1px !important;
+  border-radius: 0px !important;
+
+  border-width: 0px !important;
+  // border-color: rgba(0, 0, 0, 0.2) !important;
+  // border-style: inset !important;
+  // border-width: 1px !important;
 }
 
 .tooltip-wrapper {
@@ -348,7 +423,12 @@ button:active {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  span {
+    font-size: 23px;
+    // text-transform: capitalize;
+    font-weight: bold;
+  }
   p {
     font-size: 15px;
     font-weight: 400;
@@ -384,14 +464,24 @@ button:active {
 }
 
 // hotbar
+.hotbar-container-2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  position: absolute;
+  bottom: 2vh;
+}
+
 .hotbar-container {
   display: flex;
   align-items: center;
   gap: 2px;
-  justify-content: center;
-  width: 100%;
-  position: absolute;
-  bottom: 2vh;
+  justify-content: center; 
+
+  padding: 1.3vh;
+  background: rgba(34, 35, 51, 0.80);
 }
 
 .hotbar-item-slot {
@@ -401,9 +491,20 @@ button:active {
 }
 
 .hotbar-slot-header-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  height: 100%;
+
+	opacity: 0.15;
+
+  display:flex;
+  align-items: center;
+  justify-content: center;
+
+	pointer-events: none;
 }
 
 // item notifications
@@ -424,16 +525,14 @@ button:active {
 .item-notification-action-box {
   width: 100%;
   color: $textColor;
-  background-color: $seconaryColor;
-  text-transform: uppercase;
-  text-align: center;
-  border-top-left-radius: 0.25vh;
-  border-top-right-radius: 0.25vh;
+  // text-transform: capitalize;
   font-family: $mainFont;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 3% 4%;
   p {
-    font-size: 11px;
-    padding: 2px;
-    font-weight: 600;
+    font-size: 1.25vh;
   }
 }
 
@@ -441,18 +540,33 @@ button:active {
   @extend .inventory-slot;
   height: $gridSize;
   width: $gridSize;
+  background-color: rgba(34, 35, 51, 0.80);
+  box-shadow: none;
+  
+  .inventory-slot-label-box {
+    width: 100%;
+    text-align: center;
+    margin: 3% 0%;
+  }
+
+  .inventory-slot-label-text {
+    font-weight: 300;
+    font-size: 1.25vh;
+    font-family: $mainFont;
+  }
 }
 
 .durability-bar {
-  background: rgba(0, 0, 0, 0.5);
+  background: #1114199f;
   height: 3px;
   overflow: hidden;
 }
 
 .weight-bar {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px inset rgba(0, 0, 0, 0.1);
-  height: 0.8vh;
+  background: #1114199f;
+  // border: 1px inset rgba(0, 0, 0, 0.1);
+  height: 0.5vh;
+  margin-top: 0.5vh;
   border-radius: 5%;
   overflow: hidden;
 }
