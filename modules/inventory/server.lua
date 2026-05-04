@@ -1639,7 +1639,7 @@ local activeSlots = {}
 ---@param source number
 ---@param data SwapSlotData
 lib.callback.register('ox_inventory:swapItems', function(source, data)
-	if data.toType ~= 'player' and data.fromType ~= 'player' then
+	if data.fromType ~= data.toType and data.toType ~= 'player' and data.fromType ~= 'player' then
         Utils.LogExploit(source, 'swapItems', 'Triggered event with invalid data', true)
         return
     end
