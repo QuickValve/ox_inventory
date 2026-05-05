@@ -95,7 +95,7 @@ local GetVehicleNumberPlateText = GetVehicleNumberPlateText
 
 ---Atempts to lazily load inventory data from the database or create a new player-owned instance for "personal" stashes
 ---@param data table
----@param player table
+---@param player OxInventory
 ---@param ignoreSecurityChecks boolean
 ---@return OxInventory | false | nil
 local function loadInventoryData(data, player, ignoreSecurityChecks)
@@ -198,6 +198,7 @@ local function loadInventoryData(data, player, ignoreSecurityChecks)
 				inventory = Inventory.Create(stash.name, stash.label or stash.name, 'stash', stash.slots, 0, stash.maxWeight, owner, nil, stash.groups)
                 inventory.coords = stash.coords
                 inventory.distance = stash.distance
+                inventory.instance = stash.instance
 			end
 		end
 	end
@@ -2688,6 +2689,7 @@ end
 ---@param owner? string|number|boolean
 ---@param groups? table<string, number>
 ---@param coords? vector3|table<vector3>
+---@param instance? string|number
 --- For simple integration with other resources that want to create valid stashes.
 --- This needs to be triggered before a player can open a stash.
 --- ```
@@ -2698,7 +2700,7 @@ end
 ---
 --- groups: { ['police'] = 0 }
 --- ```
-local function registerStash(name, label, slots, maxWeight, owner, groups, coords)
+local function registerStash(name, label, slots, maxWeight, owner, groups, coords, instance)
 	name, slots, maxWeight, coords = checkStashProperties({
 		name = name,
 		slots = slots,
@@ -2720,6 +2722,7 @@ local function registerStash(name, label, slots, maxWeight, owner, groups, coord
 				stash.maxWeight = maxWeight or stash.maxWeight
 				stash.groups = groups or stash.groups
 				stash.coords = coords or stash.coords
+				stash.instance = instance or stash.instance
 			end
 		end
 	end
@@ -2731,7 +2734,8 @@ local function registerStash(name, label, slots, maxWeight, owner, groups, coord
 		slots = slots,
 		maxWeight = maxWeight,
 		groups = groups,
-		coords = coords
+		coords = coords,
+		instance = instance
 	}
 end
 
@@ -2748,6 +2752,7 @@ function Inventory.CreateTemporaryStash(properties)
 
 	inventory.items, inventory.weight = generateItems(inventory, 'drop', properties.items)
 	inventory.coords = coords
+	inventory.instance = properties.instance
 
 	return inventory.id
 end
