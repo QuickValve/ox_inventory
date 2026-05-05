@@ -78,14 +78,14 @@ local function canOpenTarget(ped)
 end
 
 ---@class OpenInventory
----@field id string | number
+---@field id string | integer
 ---@field label string
 ---@field type string
----@field slots number
----@field weight number
----@field maxWeight number
+---@field slots integer
+---@field weight integer
+---@field maxWeight integer
 ---@field coords? vector3
----@field distance? number
+---@field distance? integer
 ---@field instance? string | number
 ---@field [string] unknown
 local defaultInventory = {
@@ -99,7 +99,7 @@ local defaultInventory = {
 local currentInventory = defaultInventory
 
 local function closeTrunk()
-	if currentInventory?.type == 'trunk' then
+	if currentInventory.type == 'trunk' then
 		local coords = GetEntityCoords(playerPed, true)
 		---@todo animation for vans?
 		Utils.PlayAnimAdvanced(0, 'anim@heists@fleeca_bank@scope_out@return_case', 'trevor_action', coords.x, coords.y, coords.z, 0.0, 0.0, GetEntityHeading(playerPed), 2.0, 2.0, 1000, 49, 0.25)
@@ -143,7 +143,7 @@ function client.openInventory(inv, data)
 			end
 
 			if inv ~= 'drop' and inv ~= 'container' then
-				if (data?.id or data) == currentInventory?.id then
+				if (data?.id or data) == currentInventory.id then
 					-- Triggering exports.ox_inventory:openInventory('stash', 'mystash') twice in rapid succession is weird behaviour
 					return warn(("script tried to open inventory, but it is already open\n%s"):format(Citizen.InvokeNative(`FORMAT_STACK_TRACE` & 0xFFFFFFFF, nil, 0, Citizen.ResultAsString())))
 				else
@@ -313,7 +313,7 @@ function client.openInventory(inv, data)
                 currentInventory.door = vehicleClass == 12 and { 2, 3 } or Vehicles.Storage[vehicleHash] and 4 or 5
             end
 
-            while currentInventory?.entity == entity and invOpen and DoesEntityExist(entity) and Inventory.CanAccessTrunk(entity) do
+            while currentInventory.entity == entity and invOpen and DoesEntityExist(entity) and Inventory.CanAccessTrunk(entity) do
                 Wait(100)
             end
 
@@ -888,8 +888,6 @@ local function registerCommands()
 end
 
 function client.closeInventory(server)
-	-- because somehow people are triggering this when the inventory isn't loaded
-	-- and they're incapable of debugging, and I can't repro on a fresh install
 	if not client.interval then return end
 
 	if invOpen then
@@ -904,11 +902,11 @@ function client.closeInventory(server)
 
 		if invOpen ~= nil then return end
 
-		if not server and currentInventory then
+		if not server and currentInventory ~= defaultInventory then
 			TriggerServerEvent('ox_inventory:closeInventory')
 		end
 
-		currentInventory = nil
+		currentInventory = defaultInventory
 		plyState.invOpen = false
 		defaultInventory.coords = nil
 	end
@@ -1381,7 +1379,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 			else
 				playerCoords = GetEntityCoords(playerPed)
 
-				if currentInventory and not currentInventory.ignoreSecurityChecks then
+				if not currentInventory.ignoreSecurityChecks then
                     local maxDistance = (currentInventory.distance or currentInventory.type == 'stash' and 4.8 or 1.8) + 0.2
 
 					if currentInventory.type == 'otherplayer' then
@@ -1710,7 +1708,7 @@ RegisterNUICallback('giveItem', function(data, cb)
 
 	if client.giveplayerlist then
 		local coords = cache.vehicle and GetWorldPositionOfEntityBone(playerPed, 0) or GetEntityCoords(playerPed)
-	
+
 		local nearbyPlayers = lib.getNearbyPlayers(coords, 3.0)
         local nearbyCount = #nearbyPlayers
 
@@ -1918,7 +1916,7 @@ RegisterNUICallback('craftItem', function(data, cb)
 		end
 	end
 
-	if not currentInventory or currentInventory.type ~= 'crafting' then
+	if currentInventory.type ~= 'crafting' then
 		client.openInventory('crafting', { id = id, index = index })
 	end
 end)
