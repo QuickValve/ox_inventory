@@ -251,7 +251,12 @@ local function openInventory(source, invType, data, ignoreSecurityChecks)
             return
         end
 
-        if not ignoreSecurityChecks and right.groups and not server.hasGroup(left, right.groups) then return end
+        if not ignoreSecurityChecks then
+            local playerState = Player(source).state
+
+            if right.groups and not server.hasGroup(left, right.groups) then return end
+            if right.instance and playerState.instance ~= right.instance then return end
+        end
 
         local hookPayload = {
             source = source,
