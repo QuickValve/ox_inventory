@@ -77,6 +77,17 @@ local function canOpenTarget(ped)
 	or IsEntityPlayingAnim(ped, 'random@mugging3', 'handsup_standing_base', 3)
 end
 
+---@class OpenInventory
+---@field id string | number
+---@field label string
+---@field type string
+---@field slots number
+---@field weight number
+---@field maxWeight number
+---@field coords? vector3
+---@field distance? number
+---@field instance? string | number
+---@field [string] unknown
 local defaultInventory = {
 	type = 'newdrop',
 	slots = shared.dropslots,

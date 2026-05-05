@@ -304,7 +304,8 @@ local function openInventory(source, invType, data, ignoreSecurityChecks)
         maxWeight = right.maxWeight,
         items = right.items,
         coords = closestCoords or right.coords,
-        distance = right.distance
+        distance = right.distance,
+        instance = right.instance
     }
 end
 
