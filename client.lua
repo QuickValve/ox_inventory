@@ -887,7 +887,7 @@ local function registerCommands()
 	registerCommands = nil
 end
 
-function client.closeInventory(server)
+function client.closeInventory()
 	if not client.interval then return end
 
 	if invOpen then
@@ -902,9 +902,7 @@ function client.closeInventory(server)
 
 		if invOpen ~= nil then return end
 
-		if not server and currentInventory ~= defaultInventory then
-			TriggerServerEvent('ox_inventory:closeInventory')
-		end
+		TriggerServerEvent('ox_inventory:closeInventory')
 
 		currentInventory = defaultInventory
 		plyState.invOpen = false
