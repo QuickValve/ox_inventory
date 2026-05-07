@@ -368,15 +368,29 @@ local function minimal(inv)
 	return inventory
 end
 
+local Items = require 'modules.items.server'
+
 ---@param inv inventory
----@param item table
+---@param item table | string
 ---@param count number
 ---@param metadata any
----@param slot any
+---@param slot number
 function Inventory.SetSlot(inv, item, count, metadata, slot)
 	inv = Inventory(inv) --[[@as OxInventory]]
 
-	if not inv then return end
+    if not inv?.slots then return false, 'invalid_inventory' end
+
+   	if type(count) ~= 'number' then return false, 'invalid_count' end
+
+    count = math.floor(count + 0.5)
+
+	if count <= 0 then return false, 'negative_count' end
+
+    if type(item) ~= 'table' then
+        item = Items(item)
+
+        if not item then return false, 'invalid_item' end
+    end
 
 	local currentSlot = inv.items[slot]
 	local newCount = currentSlot and currentSlot.count + count or count
@@ -400,8 +414,6 @@ function Inventory.SetSlot(inv, item, count, metadata, slot)
 
 	return currentSlot
 end
-
-local Items = require 'modules.items.server'
 
 CreateThread(function()
     Inventory.accounts = server.accounts
