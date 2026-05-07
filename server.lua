@@ -399,6 +399,8 @@ RegisterNetEvent('ox_inventory:usedItemInternal', function(slot)
     inventory.usingItem = nil
 end)
 
+local GetLocks = require 'modules.locks'
+
 ---@param source number
 ---@param itemName string
 ---@param slot number?
@@ -451,6 +453,12 @@ lib.callback.register('ox_inventory:useItem', function(source, itemName, slot, m
         end
 
         if item and data and data.count > 0 and data.name == item.name then
+            local activeSlots <close> = GetLocks({
+                ('inventory-%s:slot-%s'):format(inventory.id, slot),
+            })
+
+    		if not activeSlots then return end
+
             data = { name = data.name, label = label, count = data.count, slot = slot, metadata = data.metadata, weight =
             data.weight }
 
