@@ -1336,7 +1336,21 @@ function Inventory.RemoveItem(inv, item, count, metadata, slot, ignoreTotal, str
 
 	inv = Inventory(inv) --[[@as OxInventory]]
 
-	if not inv?.slots then return false, 'invalid_inventory' end
+    if not inv?.slots then return false, 'invalid_inventory' end
+
+    if slot then
+        local slotItem = inv.items[slot]
+
+        if not slotItem then
+            return false, 'no_item_in_slot'
+        end
+
+        if count > slotItem.count then
+            if not ignoreTotal then return false, 'not_enough_items_in_slot' end
+
+            count = slotItem.count
+        end
+    end
 
 	metadata = assertMetadata(metadata)
 	if strict == nil then strict = true end
