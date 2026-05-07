@@ -1635,7 +1635,7 @@ local function dropItem(source, playerInventory, fromData, data)
 	}
 end
 
-local activeSlots = {}
+local GetLocks = require 'modules.locks'
 
 ---@param source number
 ---@param data SwapSlotData
@@ -1662,9 +1662,10 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
     if data.toType == 'inspect' or data.fromType == 'inspect' then return end
 
 	local fromRef = ('%s:%s'):format(fromInventory.id, data.fromSlot)
-	local toRef = ('%s:%s'):format(toInventory.id, data.toSlot)
+    local toRef = ('%s:%s'):format(toInventory.id, data.toSlot)
+    local activeSlots <close> = GetLocks(fromRef, toRef)
 
-	if activeSlots[fromRef] or activeSlots[toRef] then
+	if not activeSlots then
 		return false, {
 			{
 				item = toInventory.items[data.toSlot] or { slot = data.toSlot },
@@ -1689,14 +1690,6 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 			return false, 'evidence_cannot_take'
 		end
 	end
-
-	activeSlots[fromRef] = true
-	activeSlots[toRef] = true
-
-	local _ <close> = defer(function()
-		activeSlots[fromRef] = nil
-		activeSlots[toRef] = nil
-	end)
 
 	if toInventory and (data.toType == 'newdrop' or fromInventory ~= toInventory or data.fromSlot ~= data.toSlot) then
 		local fromData = fromInventory.items[data.fromSlot]
@@ -2458,19 +2451,12 @@ local function giveItem(playerId, slot, target, count)
 
 		local toSlot = Inventory.GetSlotForItem(toInventory, data.name, data.metadata)
 		local fromRef = ('%s:%s'):format(fromInventory.id, slot)
-		local toRef = ('%s:%s'):format(toInventory.id, toSlot)
+        local toRef = ('%s:%s'):format(toInventory.id, toSlot)
+        local activeSlots <close> = GetLocks(fromRef, toRef)
 
-		if activeSlots[fromRef] or activeSlots[toRef] then
+		if not activeSlots then
 			return { 'cannot_give', count, data.label }
 		end
-
-		activeSlots[fromRef] = true
-		activeSlots[toRef] = true
-
-		local _ <close> = defer(function()
-			activeSlots[fromRef] = nil
-			activeSlots[toRef] = nil
-		end)
 
 		if TriggerEventHooks('swapItems', {
 			source = fromInventory.id,
