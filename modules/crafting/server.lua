@@ -198,6 +198,8 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 
             local activeSlots <close> = GetLocks(tbl)
 
+            if not activeSlots then return end
+
 			if not TriggerEventHooks('craftItem', {
 				source = source,
 				benchId = id,
