@@ -1661,9 +1661,10 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 
     if data.toType == 'inspect' or data.fromType == 'inspect' then return end
 
-	local fromRef = ('inventory-%s:slot-%s'):format(fromInventory.id, data.fromSlot)
-    local toRef = ('inventory-%s:slot-%s'):format(toInventory.id, data.toSlot)
-    local activeSlots <close> = GetLocks(fromRef, toRef)
+    local activeSlots <close> = GetLocks({
+       	('inventory-%s:slot-%s'):format(fromInventory.id, data.fromSlot),
+        ('inventory-%s:slot-%s'):format(toInventory.id, data.toSlot)
+    })
 
 	if not activeSlots then
 		return false, {
@@ -2450,9 +2451,11 @@ local function giveItem(playerId, slot, target, count)
 		end
 
 		local toSlot = Inventory.GetSlotForItem(toInventory, data.name, data.metadata)
-		local fromRef = ('inventory-%s:slot-%s'):format(fromInventory.id, slot)
-        local toRef = ('inventory-%s:slot-%s'):format(toInventory.id, toSlot)
-        local activeSlots <close> = GetLocks(fromRef, toRef)
+
+        local activeSlots <close> = GetLocks({
+            ('inventory-%s:slot-%s'):format(fromInventory.id, slot),
+            ('inventory-%s:slot-%s'):format(toInventory.id, toSlot)
+        })
 
 		if not activeSlots then
 			return { 'cannot_give', count, data.label }

@@ -14,14 +14,12 @@ function lock:__close()
     end
 end
 
----@param ... string
+---@param obj string[]
 ---Returns a `Lock` if every requested lock was sucessfully acquired.
 ---
 ---The returned `Lock` must always be assigned to a to-be-closed variable.
 ---@nodiscard
-local function GetLocks(...)
-    local obj = { ... }
-
+local function GetLocks(obj)
     for i = 1, #obj do
         local id = obj[i]
 
