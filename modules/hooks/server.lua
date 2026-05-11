@@ -32,11 +32,10 @@ local function typeFilter(filter, type)
 end
 
 local function triggerPostEvents(hookIds, success, payload)
-	local postEvent = 'ox_inventory:%s'
 	payload.hookId = nil
 
 	for i = 1, #hookIds do
-		TriggerEvent(postEvent:format(hookIds[i]), success, payload)
+		TriggerEvent(hookIds[i], success, payload)
 	end
 end
 
