@@ -200,26 +200,28 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 
             if not activeSlots then return end
 
-			if not TriggerEventHooks('craftItem', {
+			local hooks <close> = TriggerEventHooks('craftItem', {
 				source = source,
 				benchId = id,
 				benchIndex = index,
 				recipe = recipe,
 				toInventory = left.id,
 				toSlot = toSlot,
-			}) then return false end
+			})
+
+			if not hooks.success then return false end
 
 			local success = lib.callback.await('ox_inventory:startCrafting', source, id, recipeId)
 
 			if success then
 				for name, needs in pairs(recipe.ingredients) do
-					if Inventory.GetItemCount(left, name) < needs then return end
+					if Inventory.GetItemCount(left, name) < needs then hooks.success = false return end
 				end
 
 				for slot, count in pairs(tbl) do
 					local invSlot = left.items[slot]
 
-					if not invSlot then return end
+					if not invSlot then hooks.success = false return end
 
 					if count < 1 then
 						local item = Items(invSlot.name)
@@ -258,7 +260,7 @@ lib.callback.register('ox_inventory:craftItem', function(source, id, index, reci
 					else
 						local removed = invSlot and Inventory.RemoveItem(left, invSlot.name, count, nil, slot)
 						-- Failed to remove item (inventory state unexpectedly changed?)
-						if not removed then return end
+						if not removed then hooks.success = false return end
 					end
 				end
 

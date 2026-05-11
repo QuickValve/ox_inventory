@@ -31,8 +31,26 @@ local function typeFilter(filter, type)
 	return filter[type] or false
 end
 
+local function triggerPostEvents(hookIds, success, payload)
+	local postEvent = 'ox_inventory:%s'
+	payload.hookId = nil
+
+	for i = 1, #hookIds do
+		TriggerEvent(postEvent:format(hookIds[i]), success, payload)
+	end
+end
+
 local function TriggerEventHooks(event, payload)
     local hooks = eventHooks[event]
+	local result = setmetatable({ ok = false }, {
+		__close = function(self, err)
+			if err then
+				self.success = false
+			end
+
+			triggerPostEvents(self, self.success, payload)
+		end
+	})
 
     if hooks then
 		local fromInventory = payload.fromInventory and tostring(payload.fromInventory) or payload.inventoryId and tostring(payload.inventoryId) or payload.shopType and tostring(payload.shopType)
@@ -58,56 +76,71 @@ local function TriggerEventHooks(event, payload)
 				shared.info(('Triggering event hook "%s".'):format(hook.hookId))
 			end
 
-			local start = microtime()
-            local _, response = pcall(hook, payload)
-			local executionTime = microtime() - start
+			result[#result + 1] = hook.hookId
 
-			if executionTime >= 10000 then
-				warn(('Execution of event hook "%s" took %.2fms.'):format(hook.hookId, executionTime / 1e3))
-			end
+			if hook.__call then
+				local start = microtime()
+				local _, response = pcall(hook, payload)
+				local executionTime = microtime() - start
 
-			if event == 'createItem' then
-				if type(response) == 'table' then
-					payload.metadata = response
+				if executionTime >= 10000 then
+					warn(('Execution of event hook "%s" took %.2fms.'):format(hook.hookId, executionTime / 1e3))
 				end
-			elseif response == false then
-                return false
-            end
+
+				if event == 'createItem' then
+					if type(response) == 'table' then
+						payload.metadata = response
+					end
+				elseif response == false then
+					return result
+				end
+			end
 
 			::continue::
         end
     end
 
+
 	if event == 'createItem' then
-		return payload.metadata
+		result.result = payload.metadata
 	end
 
-    return true
+	result.success = true
+
+    return result
 end
 
-exports('registerHook', function(event, cb, options)
+exports('registerHook', function(event, ref, options)
     if not eventHooks[event] then
         eventHooks[event] = {}
     end
 
-	local mt = getmetatable(cb)
+	local mt = ref and getmetatable(ref)
 	local idx = #eventHooks[event] + 1
 	local resource = GetInvokingResource()
 
-	mt.__index = nil
-	mt.__newindex = nil
-   	cb.resource = resource
-	cb.hookId = ('%s:%s:%s'):format(resource, event, idx)
+	if mt then
+		mt.__index = mt
+		mt.__newindex = nil
+	end
+
+	if not ref then
+		ref = options or {}
+		options = nil
+	end
+
+   	ref.resource = resource
+	ref.hookId = ('%s:%s:%s'):format(resource, event, idx)
 
 	if options then
 		for k, v in pairs(options) do
-			cb[k] = v
+			ref[k] = v
 		end
 	end
 
-    eventHooks[event][idx] = cb
+    eventHooks[event][idx] = ref
 
-	return cb.hookId
+	return ref.hookId
 end)
 
 local function removeResourceHooks(resource, id)

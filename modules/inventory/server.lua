@@ -1613,7 +1613,7 @@ local function dropItem(source, playerInventory, fromData, data)
 
     local dropId = generateInvId('drop')
 
-	if not TriggerEventHooks('swapItems', {
+	local hooks <close> = TriggerEventHooks('swapItems', {
 		source = source,
 		fromInventory = playerInventory.id,
 		fromSlot = fromData,
@@ -1624,7 +1624,9 @@ local function dropItem(source, playerInventory, fromData, data)
 		count = data.count,
         action = 'move',
         dropId = dropId,
-	}) then return end
+	})
+
+	if not hooks.success then return end
 
     fromData.count -= data.count
     fromData.weight = Inventory.SlotWeight(Items(fromData.name), fromData)
@@ -1645,7 +1647,7 @@ local function dropItem(source, playerInventory, fromData, data)
 
 	local inventory = Inventory.Create(dropId, ('Drop %s'):format(dropId:gsub('%D', '')), 'drop', shared.dropslots, toData.weight, shared.dropweight, false, {[data.toSlot] = toData})
 
-	if not inventory then return end
+	if not inventory then hooks.success = false return end
 
 	inventory.coords = data.coords
 	Inventory.Drops[dropId] = {coords = inventory.coords, instance = data.instance}
@@ -1780,7 +1782,9 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 
 				if not sameInventory then
 					if (toWeight <= toInventory.maxWeight and fromWeight <= fromInventory.maxWeight) then
-						if not TriggerEventHooks('swapItems', hookPayload) then return end
+						local hooks <close> = TriggerEventHooks('swapItems', hookPayload)
+
+						if not hooks.success then return end
 
 						if containerItem then
 							local toContainer = toInventory.type == 'container'
@@ -1789,6 +1793,7 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 							local checkItem = toContainer and fromData.name or toData.name
 
 							if (whitelist and not whitelist[checkItem]) or (blacklist and blacklist[checkItem]) then
+								hooks.success = false
 								return
 							end
 
@@ -1812,7 +1817,9 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 						end
 					else return false, 'cannot_carry' end
 				else
-					if not TriggerEventHooks('swapItems', hookPayload) then return end
+					local hooks <close> = TriggerEventHooks('swapItems', hookPayload)
+
+					if not hooks.success then return end
 
 					toData, fromData = Inventory.SwapSlots(fromInventory, toInventory, data.fromSlot, data.toSlot)
 				end
@@ -1827,9 +1834,12 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 				if fromInventory.type == 'container' or sameInventory or totalWeight <= toInventory.maxWeight then
 					hookPayload.action = 'stack'
 
-					if not TriggerEventHooks('swapItems', hookPayload) then
+					local hooks <close> = TriggerEventHooks('swapItems', hookPayload)
+
+					if not hooks.success then
 						toData.count -= data.count
 						fromData.count += data.count
+
 						return
 					end
 
@@ -1871,7 +1881,9 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 				if fromInventory.type == 'container' or sameInventory or (toInventory.weight + toData.weight <= toInventory.maxWeight) then
 					hookPayload.action = 'move'
 
-					if not TriggerEventHooks('swapItems', hookPayload) then return end
+					local hooks <close> = TriggerEventHooks('swapItems', hookPayload)
+
+					if not hooks.success then return end
 
 					if not sameInventory then
 						local toContainer = toInventory.type == 'container'
@@ -1882,6 +1894,7 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 								local blacklist = Items.containers[containerItem.name]?.blacklist
 
 								if (whitelist and not whitelist[fromData.name]) or (blacklist and blacklist[fromData.name]) then
+									hooks.success = false
 									return
 								end
 							end
@@ -2496,7 +2509,7 @@ local function giveItem(playerId, slot, target, count)
 			return { 'cannot_give', count, data.label }
 		end
 
-		if TriggerEventHooks('swapItems', {
+		local hooks <close> = TriggerEventHooks('swapItems', {
 			source = fromInventory.id,
 			fromInventory = fromInventory.id,
 			fromType = fromInventory.type,
@@ -2505,8 +2518,9 @@ local function giveItem(playerId, slot, target, count)
 			count = count,
 			action = 'give',
 			fromSlot = data,
-		}) then
-			---@todo manually call swapItems or something?
+		})
+
+		if hooks.success then
 			if Inventory.AddItem(toInventory, item, count, data.metadata, toSlot) then
 				if Inventory.RemoveItem(fromInventory, item, count, data.metadata, slot) then
 					if server.loglevel > 0 then
@@ -2515,6 +2529,8 @@ local function giveItem(playerId, slot, target, count)
 
 					return
 				else
+					hooks.success = false
+
 					Inventory.RemoveItem(toInventory, item, count, data.metadata, toSlot)
 				end
 			end
