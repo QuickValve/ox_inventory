@@ -385,8 +385,6 @@ function Inventory.SetSlot(inv, item, count, metadata, slot)
 
     count = math.floor(count + 0.5)
 
-	if count <= 0 then return false, 'negative_count' end
-
     if type(item) ~= 'table' then
         item = Items(item)
 
@@ -1369,7 +1367,12 @@ function Inventory.RemoveItem(inv, item, count, metadata, slot, ignoreTotal, str
 
 	if slot and itemSlots[slot] then
 		removed = count
-		Inventory.SetSlot(inv, item, -count, inv.items[slot].metadata, slot)
+		local ok, result = Inventory.SetSlot(inv, item, -count, inv.items[slot].metadata, slot)
+
+		if not ok then
+		    error(('Failed to remove %sx %s from inventory-%s:slot-%s (%s).'):format(count, item.name, inv.id, slot, result))
+		end
+
 		slots[#slots+1] = inv.items[slot] or slot
 	elseif itemSlots and totalCount > 0 then
 		for k, v in pairs(itemSlots) do
@@ -1382,7 +1385,12 @@ function Inventory.RemoveItem(inv, item, count, metadata, slot, ignoreTotal, str
 					inv.items[k] = nil
 					slots[#slots+1] = inv.items[k] or k
 				elseif v > count then
-					Inventory.SetSlot(inv, item, -count, inv.items[k].metadata, k)
+					local ok, result = Inventory.SetSlot(inv, item, count, inv.items[k].metadata, k)
+
+					if not ok then
+					    error(('Failed to remove %sx %s from inventory-%s:slot-%s (%s).'):format(count, item.name, inv.id, k, result))
+					end
+
 					slots[#slots+1] = inv.items[k] or k
 					removed = total
 					count = v - count
