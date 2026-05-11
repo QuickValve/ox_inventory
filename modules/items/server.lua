@@ -226,6 +226,7 @@ function Items.Metadata(inv, item, metadata, count)
 		metadata = metadata,
 		item = item,
 		count = count,
+		resource = GetInvokingResource() or shared.resource
 	})
 
 	if hooks.success and type(hooks.result) == 'table' then
