@@ -88,7 +88,7 @@ lib.callback.register('ox_inventory:openCraftingBench', function(source, id, ind
 			end
 		end
 
-		left:openInventory(left)
+		left:openInventory()
 	end
 
 	return { label = left.label, type = left.type, slots = left.slots, weight = left.weight, maxWeight = left.maxWeight }

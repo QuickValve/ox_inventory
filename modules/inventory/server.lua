@@ -14,15 +14,15 @@ OxInventory.__index = OxInventory
 function OxInventory:openInventory(inv)
 	if not self?.player then return end
 
-	inv = Inventory(inv)
+	inv = inv and inv ~= self and Inventory(inv) or nil --[[@as OxInventory? ]]
+	self.open = inv?.id or self.id
 
-	if not inv then return end
+    if inv then
+        inv:set('open', true)
+        inv.openedBy[self.id] = true
+    end
 
-	inv:set('open', true)
-	inv.openedBy[self.id] = true
-	self.open = inv.id
-
-	TriggerEvent('ox_inventory:openedInventory', self.id, inv.id)
+    TriggerEvent('ox_inventory:openedInventory', self.id, inv?.id)
 end
 
 ---Close a player's inventory.
@@ -30,21 +30,22 @@ end
 function OxInventory:closeInventory(noEvent)
 	if not self.player or not self.open then return end
 
-	local inv = Inventory(self.open)
+	local inv = self.open ~= self.id and Inventory(self.open)
 
-	if not inv then return end
+    if inv then
+        inv.openedBy[self.id] = nil
+        inv:set('open', false)
+    end
 
-	inv.openedBy[self.id] = nil
-	inv:set('open', false)
-	self.open = false
-	self.currentShop = nil
-	self.containerSlot = nil
+    self.open = false
+    self.currentShop = nil
+    self.containerSlot = nil
 
 	if not noEvent then
 		TriggerClientEvent('ox_inventory:closeInventory', self.id, true)
 	end
 
-	TriggerEvent('ox_inventory:closedInventory', self.id, inv.id)
+	TriggerEvent('ox_inventory:closedInventory', self.id, inv?.id)
 end
 
 ---@alias updateSlot { item: SlotWithItem | { slot: number }, inventory: string|number }
@@ -1675,7 +1676,7 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 
 	local playerInventory = Inventory(source)
 
-	if not playerInventory or not playerInventory.openedBy[source] then return end
+	if not playerInventory or not playerInventory.open then return end
 
 	local toInventory = (data.toType == 'player' and playerInventory) or Inventory(playerInventory.open)
 	local fromInventory = (data.fromType == 'player' and playerInventory) or Inventory(playerInventory.open)
@@ -2133,7 +2134,7 @@ function Inventory.Clear(inv, keep)
 			playerInv:closeInventory()
 		end
 
-		inv:openInventory(inv)
+		inv:openInventory()
 
 		return
 	end

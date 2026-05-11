@@ -282,11 +282,9 @@ local function openInventory(source, invType, data, ignoreSecurityChecks)
 
             if not closestCoords then return end
         end
-
-        left:openInventory(right)
-    else
-        left:openInventory(left)
     end
+
+    left:openInventory(right)
 
     return {
         id = left.id,
