@@ -1174,6 +1174,12 @@ local function setStateBagHandler(stateId)
 	setStateBagHandler = nil
 end
 
+RegisterNetEvent('txcl:heal', function()
+    if source == '' then return end
+
+    PlayerData.dead = false
+end)
+
 lib.onCache('seat', function(seat)
 	if seat then
 		local hasWeapon = GetCurrentPedVehicleWeapon(cache.ped)
