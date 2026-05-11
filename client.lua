@@ -1458,7 +1458,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 				EnableControlAction(0, EnableKeys[i], true)
 			end
 
-			if currentInventory.type == 'newdrop' then
+			if currentInventory.type == 'drop' or currentInventory.type == 'newdrop' then
 				EnableControlAction(0, 30, true)
 				EnableControlAction(0, 31, true)
 			end
