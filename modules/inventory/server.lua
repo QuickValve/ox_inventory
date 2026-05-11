@@ -2537,9 +2537,9 @@ local function updateWeapon(source, action, value, slot, specialAmmo)
 		return
 	end
 
-	local type = type(value)
+	local vtype = type(value)
 
-	if type == 'table' and action == 'component' then
+	if vtype == 'table' and action == 'component' then
 		local item = inventory.items[value.slot]
 
 		if item then
@@ -2562,6 +2562,7 @@ local function updateWeapon(source, action, value, slot, specialAmmo)
 		end
 	else
 		if not slot then slot = inventory.weapon end
+
 		local weapon = inventory.items[slot]
 
 		if weapon and weapon.metadata then
@@ -2570,6 +2571,10 @@ local function updateWeapon(source, action, value, slot, specialAmmo)
 			if not item.weapon then
 				inventory.weapon = nil
 				return
+			end
+
+			if vtype == 'number' and value < 0 then
+				value = 0
 			end
 
 			if action == 'load' and weapon.metadata.durability > 0 then
@@ -2599,15 +2604,16 @@ local function updateWeapon(source, action, value, slot, specialAmmo)
 				end
 			elseif action == 'ammo' then
 				if item.hash == `WEAPON_FIREEXTINGUISHER` or item.hash == `WEAPON_PETROLCAN` or item.hash == `WEAPON_HAZARDCAN` or item.hash == `WEAPON_FERTILIZERCAN` then
-					weapon.metadata.durability = math.floor(value)
-					weapon.metadata.ammo = weapon.metadata.durability
+                    local safeValue = math.max(0, math.min(100, math.floor(value)))
+                    weapon.metadata.durability = safeValue
+                    weapon.metadata.ammo = safeValue
 				elseif value < weapon.metadata.ammo then
 					local durability = Items(weapon.name).durability * math.abs((weapon.metadata.ammo or 0.1) - value)
 					weapon.metadata.ammo = value
 					weapon.metadata.durability = weapon.metadata.durability - durability
 					weapon.weight = Inventory.SlotWeight(item, weapon)
 				end
-			elseif action == 'melee' and value > 0 then
+			elseif action == 'melee' then
 				weapon.metadata.durability = weapon.metadata.durability - ((Items(weapon.name).durability or 1) * value)
 			end
 
