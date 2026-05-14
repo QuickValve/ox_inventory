@@ -1394,7 +1394,7 @@ function Inventory.RemoveItem(inv, item, count, metadata, slot, ignoreTotal, str
 					inv.items[k] = nil
 					slots[#slots+1] = inv.items[k] or k
 				elseif v > count then
-					local ok, result = Inventory.SetSlot(inv, item, count, inv.items[k].metadata, k)
+					local ok, result = Inventory.SetSlot(inv, item, -count, inv.items[k].metadata, k)
 
 					if not ok then
 					    error(('Failed to remove %sx %s from inventory-%s:slot-%s (%s).'):format(count, item.name, inv.id, k, result))
