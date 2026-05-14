@@ -77,7 +77,7 @@ AddEventHandler('ox_inventory:setPlayerInventory', server.setPlayerInventory)
 local registeredDumpsters = {}
 
 ---@param coords vector3
----@return string?
+---@return number?
 local function getDumpsterFromCoords(coords)
     local found
 
@@ -120,7 +120,7 @@ end
 
 ---@param source number
 ---@param invType string
----@param data? string|number|table
+---@param data? string | number | table | vector3
 ---@param ignoreSecurityChecks boolean?
 ---@return table | false | nil, table | false | nil, string?
 local function openInventory(source, invType, data, ignoreSecurityChecks)
@@ -203,7 +203,7 @@ local function openInventory(source, invType, data, ignoreSecurityChecks)
             end
         elseif invType == 'dumpster' then
             if shared.networkdumpsters then
-                local dumpsterId = getDumpsterFromCoords(data)
+                local dumpsterId = getDumpsterFromCoords(data --[[@as vector3]])
                 right = dumpsterId and Inventory(('dumpster-%s'):format(dumpsterId))
 
                 if not right then
@@ -540,11 +540,11 @@ lib.callback.register('ox_inventory:useItem', function(source, itemName, slot, m
                         local emptySlot = Inventory.GetEmptySlot(inventory)
 
                         if emptySlot then
-                            local newItem = Inventory.SetSlot(inventory, item, 1, table.deepclone(data.metadata),
+                            local ok, newItem = Inventory.SetSlot(inventory, item, 1, table.deepclone(data.metadata),
                                 emptySlot)
 
-                            if newItem then
-                                Items.UpdateDurability(inventory, newItem, item, durability)
+                            if ok and newItem then
+                                Items.UpdateDurability(inventory, newItem --[[@as SlotWithItem]], item, durability)
                             end
                         end
 

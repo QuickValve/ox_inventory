@@ -1387,7 +1387,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
                     local maxDistance = (currentInventory.distance or currentInventory.type == 'stash' and 4.8 or 1.8) + 0.2
 
 					if currentInventory.type == 'otherplayer' then
-						local id = GetPlayerFromServerId(currentInventory.id)
+						local id = GetPlayerFromServerId(currentInventory.id --[[@as number]])
 						local ped = GetPlayerPed(id)
 						local pedCoords = GetEntityCoords(ped)
 

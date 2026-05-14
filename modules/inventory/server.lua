@@ -94,8 +94,15 @@ end
 
 local GetVehicleNumberPlateText = GetVehicleNumberPlateText
 
+---@class OpenInventoryData
+---@field id string | number
+---@field owner? string | number | boolean
+---@field type? string
+---@field entityId? number
+---@field [string] unknown
+
 ---Atempts to lazily load inventory data from the database or create a new player-owned instance for "personal" stashes
----@param data table
+---@param data OpenInventoryData
 ---@param player OxInventory
 ---@param ignoreSecurityChecks boolean
 ---@return OxInventory | false | nil
@@ -289,9 +296,9 @@ function Inventory.CloseAll(inv, ignoreId)
 		return TriggerClientEvent('ox_inventory:closeInventory', -1, true)
 	end
 
-	inv = Inventory(inv) --[[@as OxInventory?]]
+	local inventory = Inventory(inv) --[[@as OxInventory?]]
 
-	if not inv then return end
+	if not inventory then return end
 
 	for playerId in pairs(inv.openedBy) do
 		local playerInv = Inventory(playerId)
@@ -376,7 +383,7 @@ local Items = require 'modules.items.server'
 ---@param count number
 ---@param metadata any
 ---@param slot number
----@return SlotWithItem | boolean, string?
+---@return boolean, string | SlotWithItem | nil
 function Inventory.SetSlot(inv, item, count, metadata, slot)
 	inv = Inventory(inv) --[[@as OxInventory]]
 
@@ -412,7 +419,7 @@ function Inventory.SetSlot(inv, item, count, metadata, slot)
 	inv.items[slot] = currentSlot
 	inv.changed = true
 
-	return currentSlot or true
+	return true, currentSlot
 end
 
 CreateThread(function()
@@ -420,14 +427,15 @@ CreateThread(function()
     TriggerEvent('ox_inventory:loadInventory', Inventory)
 end)
 
+---@param inv inventory
 function Inventory.GetAccountItemCounts(inv)
-    inv = Inventory(inv)
+    local inventory = Inventory(inv)
 
-    if not inv then return end
+    if not inventory then return end
 
     local accounts = table.clone(server.accounts)
 
-	for _, v in pairs(inv.items) do
+	for _, v in pairs(inventory.items) do
 		if accounts[v.name] then
 			accounts[v.name] += v.count
 		end
@@ -571,7 +579,7 @@ end, true)
 ---@param slots number
 ---@param weight number
 ---@param maxWeight number
----@param owner string | number | boolean
+---@param owner? string | number | boolean
 ---@param items? table
 ---@param dbId? string | number
 ---@return OxInventory?
@@ -816,7 +824,7 @@ end
 
 ---@param id string|number
 ---@param invType string
----@param owner string | number | boolean
+---@param owner? string | number | boolean
 function Inventory.Load(id, invType, owner)
     if not invType then return end
 
@@ -2032,23 +2040,23 @@ end)
 function Inventory.Confiscate(source)
 	local inv = Inventory(source)
 
-	if inv?.player then
-		db.saveStash(inv.owner, inv.owner, json.encode(minimal(inv)))
-		table.wipe(inv.items)
-		inv.weight = 0
-		inv.changed = true
+	if not inv or not inv.player then return end
 
-		TriggerClientEvent('ox_inventory:inventoryConfiscated', inv.id)
+	db.saveStash(inv.owner, inv.owner, json.encode(minimal(inv)))
+	table.wipe(inv.items)
+	inv.weight = 0
+	inv.changed = true
 
-		if server.syncInventory then server.syncInventory(inv) end
-	end
+	TriggerClientEvent('ox_inventory:inventoryConfiscated', inv.id)
+
+	if server.syncInventory then server.syncInventory(inv) end
 end
 exports('ConfiscateInventory', Inventory.Confiscate)
 
 function Inventory.Return(source)
 	local inv = Inventory(source)
 
-	if not inv?.player then return end
+	if not inv or not inv.player then return end
 
 	local items = MySQL.scalar.await('SELECT data FROM ox_inventory WHERE name = ?', { inv.owner })
 
