@@ -2214,10 +2214,12 @@ function Inventory.GetSlotForItem(inv, itemName, metadata)
 	for i = 1, inventory.slots do
 		local slotData = items[i]
 
+		if not slotData and not emptySlot then
+			emptySlot = i
+		end
+
 		if item.stack and slotData and slotData.name == item.name and table.matches(slotData.metadata, metadata) then
 			return i
-		elseif not item.stack and not slotData and not emptySlot then
-			emptySlot = i
 		end
 	end
 
