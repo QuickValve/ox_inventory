@@ -199,7 +199,7 @@ end
 
 lib.callback.register('ox_inventory:buyItem', function(source, data)
 	if data.toType == 'player' then
-		if data.count == nil then data.count = 1 end
+		data.count = math.max(1, math.floor(data.count or 1))
 
 		local playerInv = Inventory(source)
 
